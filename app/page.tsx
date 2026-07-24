@@ -14,7 +14,7 @@ import {
 const courses = [
   { id: "claude-01", n: "01", t: "認識 Claude：從新同事到工作夥伴", d: "完整了解 Claude、提示詞、Projects、Artifacts、Skills、研究模式與 AI Fluency。", m: "6 單元 · 35 分鐘 · 8 題測驗" },
   { id: "claude-code", n: "02", t: "Claude Code：把 AI 變成行動代理人", d: "從 Agentic Loop、安全權限與黃金工作流，一路學會 Context、CLAUDE.md、Skills、MCP、Hooks 與 Git 協作。", m: "7 單元 · 60–75 分鐘 · 8 題測驗" },
-  { id: "prompt-practice", n: "03", t: "提示詞實戰：把需求一次說清楚", d: "用角色、任務與規則，把模糊想法變成可驗收的工作指令。", m: "規劃中" },
+  { id: "prompt-practice", n: "03", t: "提示詞實戰：把需求一次說清楚", d: "用角色、任務與規則，把模糊想法變成可驗收的工作指令。", m: "即將完成" },
   { id: "projects", n: "04", t: "Projects：建立你的 AI 知識庫", d: "打造不必每次重新交代的專屬工作空間。", m: "規劃中" },
   { id: "artifacts-skills", n: "05", t: "Artifacts 與 Skills：把成果做出來", d: "從內容、網頁原型到可重複使用的自動化流程。", m: "規劃中" },
   { id: "research", n: "06", t: "Research：高品質研究與引用查核", d: "定義範圍、交叉驗證，讀懂引用可信度。", m: "規劃中" },
