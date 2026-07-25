@@ -135,7 +135,7 @@ function Dashboard({ session }: { session: Session }) {
     {id:"ai-fluency",n:"07",t:"AI Fluency：成為會判斷的協作者",d:"練習委派、描述、辨識與勤勉。",m:"施工中",status:"施工中",construction:true,available:false,p:null},
   ];
 
-  if (loading) return <main className="loading">✦<p>載入學習進度…</p></main>;
+  if (loading) return <main className="loading"><span className="loading-diamond" aria-hidden="true">✦</span><p>載入學習進度…</p></main>;
   return (
     <main>
       <header className="site-header">
@@ -271,7 +271,7 @@ function Course({ session, courseId }: { session: Session; courseId: "claude-01"
     }
   };
 
-  if (loading) return <main className="loading">✦<p>載入學習進度…</p></main>;
+  if (loading) return <main className="loading"><span className="loading-diamond" aria-hidden="true">✦</span><p>載入學習進度…</p></main>;
   if (locked) return <main className="locked-course"><section><span>🔒</span><p>COURSE 02</p><h1>Claude Code 尚未解鎖</h1><p>請先完成第一堂課的六個單元並通過測驗，才能開始第二階段。</p><button className="primary" onClick={() => go("/courses/claude-01")}>回到第一堂課 →</button></section></main>;
   return <main>
     <header className="course-header"><a className="brand" href="#/"><b>C</b><span>Claude 新同事訓練所</span></a><button className="text-action" onClick={() => go("/")}>← 回總目錄</button><span>嗨，{displayName}</span></header>
@@ -307,7 +307,7 @@ function SecretRoom() {
     const haystack = `${skill.n} ${skill.d} ${skill.r} ${skill.c.map((category) => skillCategories[category]).join(" ")}`.toLowerCase();
     return categoryMatch && query.trim().toLowerCase().split(/\s+/).every((word) => haystack.includes(word));
   }), [active, query]);
-  if (unlocked === null) return <main className="loading">✦<p>確認密技空間資格…</p></main>;
+  if (unlocked === null) return <main className="loading"><span className="loading-diamond" aria-hidden="true">✦</span><p>確認密技空間資格…</p></main>;
   if (!unlocked) return <main className="locked-course"><section><span>🔒</span><p>BONUS ROOM</p><h1>密技空間尚未解鎖</h1><p>完整通過第一堂與第二堂課後，這裡會自動開放。</p><button className="primary" onClick={() => go("/")}>回到課程總目錄 →</button></section></main>;
   return <main className="secret-page">
     <header className="course-header"><a className="brand" href="#/"><b>C</b><span>Claude 新同事訓練所</span></a><button className="text-action" onClick={() => go("/")}>← 回總目錄</button><span>密技空間已解鎖</span></header>
@@ -344,7 +344,7 @@ function App() {
     });
     return () => data.subscription.unsubscribe();
   }, []);
-  if (!ready) return <main className="loading">✦<p>準備課程空間…</p></main>;
+  if (!ready) return <main className="loading"><span className="loading-diamond" aria-hidden="true">✦</span><p>準備課程空間…</p></main>;
   if (!session) return <Login />;
   if (route === "/courses/claude-01") return <Course session={session} courseId="claude-01" />;
   if (route === "/courses/claude-code") return <Course session={session} courseId="claude-code" />;

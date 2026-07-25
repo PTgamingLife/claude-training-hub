@@ -25,3 +25,38 @@
 @media(max-width:900px){.skill-grid{grid-template-columns:1fr 1fr}.skill-tool{margin-inline:24px;top:78px}.secret-mascot{width:220px;height:220px}}
 @media(max-width:650px){.user{padding:7px 10px}.user b{display:none}.skill-tool{position:relative;top:0;margin:0 14px 28px;padding:18px}.skill-grid{grid-template-columns:1fr;padding-inline:14px}.secret-mascot{width:175px;height:175px;margin:28px auto 0}.secret-mascot span{font-size:43px}.secret-hero{min-height:auto}.secret-hero h1{font-size:43px}.skill-card{min-height:285px}.course-grid article>button:not(:disabled){width:100%}}
 @media(prefers-reduced-motion:reduce){.secret-mascot{animation:none}}
+
+
+/* Dashboard construction and locked bonus-room cards. */
+.under-construction{position:relative;overflow:hidden}
+.under-construction .card-no span{color:#a96539}
+.construction-sticker{min-height:68px;margin:17px 0 -6px;padding:10px 12px;display:grid;grid-template-columns:auto auto 1fr;gap:8px;align-items:center;background:#fff0bd;border:1px dashed #d5a13e;border-radius:14px;transform:rotate(-1deg)}
+.construction-sticker span{font-size:28px;animation:worker-bob 1.8s ease-in-out infinite}
+.construction-sticker i{font-size:22px;font-style:normal}
+.construction-sticker b{color:#7a5b22;font-size:11px;line-height:1.4}
+.under-construction h3{margin-top:19px}
+.secret-entry{max-width:1132px;margin:0 auto 70px;padding:30px 34px;display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;overflow:hidden;position:relative;background:linear-gradient(135deg,#fffdf8,#fff0ce 58%,#e3eadf);border:1px solid #d9c7aa;border-radius:25px;box-shadow:0 7px var(--shadow)}
+.secret-entry:after{content:"";position:absolute;right:-55px;top:-70px;width:170px;height:170px;border-radius:50%;background:rgba(240,200,96,.2)}
+.secret-mark{width:68px;height:68px;display:grid;place-items:center;z-index:1;border-radius:22px;background:var(--orange);color:#fff;font-size:30px;box-shadow:0 6px var(--dark)}
+.secret-entry h2{margin:2px 0 7px;font:600 34px Georgia,"Noto Serif TC",serif}
+.secret-entry p{margin:0;color:var(--muted);line-height:1.65}
+.secret-entry>a,.secret-entry>button{z-index:1;border:0;border-radius:12px;padding:12px 17px;background:var(--orange);color:#fff;font-weight:900;text-decoration:none;white-space:nowrap}
+.locked-secret{filter:saturate(.65)}
+.locked-secret .secret-mark{background:#b9b1a6;box-shadow:0 6px #928a80}
+.locked-secret>button{background:#d8d0c5;color:#827b72}
+@keyframes worker-bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-4px) rotate(3deg)}}
+@media(max-width:700px){
+  .secret-entry{margin-inline:14px;grid-template-columns:auto 1fr;padding:24px 20px}
+  .secret-entry>a,.secret-entry>button{grid-column:1/-1;width:100%;text-align:center}
+}
+@media(prefers-reduced-motion:reduce){.construction-sticker span{animation:none}}
+
+
+/* Animated course-space loading diamond. */
+.loading-diamond{display:block;justify-self:center;color:var(--orange);font-size:52px;line-height:1;transform-origin:center;filter:drop-shadow(0 8px 12px rgba(185,85,52,.2));animation:loading-diamond-motion 1.65s cubic-bezier(.45,.05,.55,.95) infinite}
+@keyframes loading-diamond-motion{
+  0%{transform:rotate(0deg) scale(.72);opacity:.68}
+  50%{transform:rotate(180deg) scale(1.24);opacity:1}
+  100%{transform:rotate(360deg) scale(.72);opacity:.68}
+}
+@media(prefers-reduced-motion:reduce){.loading-diamond{animation:none;transform:none}}
