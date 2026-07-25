@@ -50,3 +50,13 @@
   .secret-entry>a,.secret-entry>button{grid-column:1/-1;width:100%;text-align:center}
 }
 @media(prefers-reduced-motion:reduce){.construction-sticker span{animation:none}}
+
+
+/* Animated course-space loading diamond. */
+.loading-diamond{display:block;justify-self:center;color:var(--orange);font-size:52px;line-height:1;transform-origin:center;filter:drop-shadow(0 8px 12px rgba(185,85,52,.2));animation:loading-diamond-motion 1.65s cubic-bezier(.45,.05,.55,.95) infinite}
+@keyframes loading-diamond-motion{
+  0%{transform:rotate(0deg) scale(.72);opacity:.68}
+  50%{transform:rotate(180deg) scale(1.24);opacity:1}
+  100%{transform:rotate(360deg) scale(.72);opacity:.68}
+}
+@media(prefers-reduced-motion:reduce){.loading-diamond{animation:none;transform:none}}
