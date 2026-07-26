@@ -5,6 +5,7 @@ import type { CSSProperties } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { lessonUnits, questions as claudeQuestions } from "../app/course-data";
 import { claudeCodeQuestions, claudeCodeUnits } from "../app/claude-code-data";
+import { claudeApiQuestions, claudeApiUnits } from "../app/claude-api-data";
 import { skillCategories, skills } from "./skill-data";
 import { oauthRedirectUrl, supabase } from "./supabase";
 import "../app/globals.css";
@@ -91,6 +92,7 @@ async function loadProgress() {
   return {
     first: rows.find((row) => row.course_id === "claude-01") ?? emptyProgress("claude-01"),
     second: rows.find((row) => row.course_id === "claude-code") ?? emptyProgress("claude-code"),
+    third: rows.find((row) => row.course_id === "claude-api") ?? emptyProgress("claude-api"),
   };
 }
 
@@ -98,6 +100,7 @@ function Dashboard({ session }: { session: Session }) {
   const [progress, setProgress] = useState({
     first: emptyProgress("claude-01"),
     second: emptyProgress("claude-code"),
+    third: emptyProgress("claude-api"),
   });
   const [board, setBoard] = useState<HonorRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -124,11 +127,11 @@ function Dashboard({ session }: { session: Session }) {
     return () => { active = false; };
   }, [displayName, user.id, user.user_metadata?.avatar_url]);
 
-  const passedCount = Number(progress.first.passed) + Number(progress.second.passed);
+  const passedCount = Number(progress.first.passed) + Number(progress.second.passed) + Number(progress.third.passed);
   const courses = [
     {id:"claude-01",n:"01",t:"認識 Claude：從新同事到工作夥伴",d:"完整了解 Claude、提示詞、Projects、Artifacts、Skills、研究模式與 AI Fluency。",m:"6 單元 · 35 分鐘 · 8 題測驗",status:"OPEN",construction:false,available:true,p:progress.first},
     {id:"claude-code",n:"02",t:"Claude Code：把 AI 變成行動代理人",d:"從 Agentic Loop、安全權限與黃金工作流，一路學會 Context、CLAUDE.md、Skills、MCP、Hooks 與 Git 協作。",m:"7 單元 · 60–75 分鐘 · 8 題測驗",status:progress.first.passed?"OPEN":"LOCKED",construction:false,available:progress.first.passed,p:progress.second},
-    {id:"prompt-practice",n:"03",t:"提示詞實戰：把需求一次說清楚",d:"用角色、任務與規則，把模糊想法變成可驗收的工作指令。",m:"即將完成",status:"即將完成",construction:false,available:false,p:null},
+    {id:"claude-api",n:"03",t:"Claude API：從基礎呼叫到受控代理人",d:"從 Messages API、模型路由與 Tool Use，一路建立 MCP、Managed Agents、上下文策略與生產控制。",m:"8 單元 · 70–90 分鐘 · 8 題測驗",status:progress.second.passed?"OPEN":"LOCKED",construction:false,available:progress.second.passed,p:progress.third},
     {id:"projects",n:"04",t:"Projects：建立你的 AI 知識庫",d:"打造不必每次重新交代的專屬工作空間。",m:"施工中",status:"施工中",construction:true,available:false,p:null},
     {id:"artifacts-skills",n:"05",t:"Artifacts 與 Skills：把成果做出來",d:"從內容、網頁原型到可重複使用的自動化流程。",m:"施工中",status:"施工中",construction:true,available:false,p:null},
     {id:"research",n:"06",t:"Research：高品質研究與引用查核",d:"定義範圍、交叉驗證，讀懂引用可信度。",m:"施工中",status:"施工中",construction:true,available:false,p:null},
@@ -148,12 +151,12 @@ function Dashboard({ session }: { session: Session }) {
           <p className="eyebrow">✦ AI 協作學習地圖</p>
           <h1>一步一步，<br />把 AI 變成你的<span>好同事</span></h1>
           <p>這不是工具說明書，而是一條可以完成的免費學習路線。每一節都要完成，才會解鎖下一節；完成整堂課後再挑戰測驗。</p>
-          <div className="stats"><span><strong>02</strong>完整階段課程</span><span><strong>13</strong>完整教學單元</span><span><strong>75%</strong>測驗門檻</span></div>
+          <div className="stats"><span><strong>03</strong>完整階段課程</span><span><strong>21</strong>完整教學單元</span><span><strong>75%</strong>測驗門檻</span></div>
         </div>
         <figure className="hero-visual"><img src={asset("/images/hero-premium.webp")} alt="人類與 AI 工作夥伴共同分析資料" /><figcaption><span>FREE AI COURSE</span><b>開始一段更聰明的協作關係</b></figcaption></figure>
       </section>
       <section className="catalog" id="catalog">
-        <div className="section-head"><div><p className="eyebrow">COURSE CATALOG</p><h2>課程總目錄</h2></div><p>第一堂通過後會解鎖 Claude Code。每堂課內必須依序完成所有單元，才能進入測驗。</p></div>
+        <div className="section-head"><div><p className="eyebrow">COURSE CATALOG</p><h2>課程總目錄</h2></div><p>課程依序解鎖：先認識 Claude，再學 Claude Code，最後進入 Claude API 與受控代理人架構。每堂課完成所有單元後才能測驗。</p></div>
         <div className="course-grid">
           {courses.map((course) => (
             <article className={`${course.available ? "open" : "locked"} ${course.construction ? "under-construction" : ""}`} key={course.n}>
@@ -162,51 +165,80 @@ function Dashboard({ session }: { session: Session }) {
               <h3>{course.t}</h3><p>{course.d}</p><p>{course.m}</p>
               {course.available ? (
                 <button onClick={() => go(`/courses/${course.id}`)}>
-                  {course.id === "claude-01" && course.p?.passed ? "完美通過　按下複習" : course.p?.completed_unit_ids.length ? "繼續上課 →" : `進入第 ${Number(course.n)} 堂課 →`}
+                  {course.id === "claude-01" && course.p?.passed ? "完美通過　按下複習" : course.p?.passed ? "完成通過　按下複習" : course.p?.completed_unit_ids.length ? "繼續上課 →" : `進入第 ${Number(course.n)} 堂課 →`}
                 </button>
-              ) : <button disabled>{course.construction ? "施工中" : course.id === "prompt-practice" ? "即將完成" : "通過第一堂後解鎖"}</button>}
+              ) : <button disabled>{course.construction ? "施工中" : course.id === "claude-api" ? "通過第二堂後解鎖" : "通過第一堂後解鎖"}</button>}
             </article>
           ))}
         </div>
       </section>
       <section className="record" id="record">
-        <div><p className="eyebrow">YOUR LEARNING RECORD</p><h2>你的學習紀錄</h2><p>{progress.second.passed?`第二堂 Claude Code 已通過，最高 ${progress.second.quiz_score}/8 分。`:progress.first.passed?`第一堂已通過；Claude Code 已完成 ${progress.second.completed_unit_ids.length}/7 節。`:`第一堂課已完成 ${progress.first.completed_unit_ids.length}/6 節；完成六節後即可參加測驗。`}</p></div>
+        <div><p className="eyebrow">YOUR LEARNING RECORD</p><h2>你的學習紀錄</h2><p>{progress.third.passed?`三堂正式課程皆已通過；Claude API 最高 ${progress.third.quiz_score}/8 分。`:progress.second.passed?`第二堂已通過；Claude API 已完成 ${progress.third.completed_unit_ids.length}/8 節。`:progress.first.passed?`第一堂已通過；Claude Code 已完成 ${progress.second.completed_unit_ids.length}/7 節。`:`第一堂課已完成 ${progress.first.completed_unit_ids.length}/6 節；完成六節後即可參加測驗。`}</p></div>
         <div><strong>{passedCount}</strong><span>已通過課程</span></div>
       </section>
       <section className="honor" id="honor">
         <div className="section-head"><div><p className="eyebrow">HONOR ROLL</p><h2>學習榮譽榜</h2></div><p>通過測驗後自動登榜，顯示每位學員已通過的課程數。</p></div>
         {board.length ? <div className="honor-list">{board.map((row, i) => <div key={`${row.display_name}-${i}`}><b>{String(i+1).padStart(2,"0")}</b><span>{row.display_name}</span><em>通過 {row.completed_courses} 門課</em></div>)}</div> : <p className="empty-board">第一位通過的學員，會成為榮譽榜開榜者 ✦</p>}
       </section>
-      <section className={`secret-entry ${passedCount === 2 ? "unlocked" : "locked-secret"}`} id="secret">
-        <div className="secret-mark" aria-hidden="true">{passedCount === 2 ? "✦" : "🔒"}</div>
-        <div><p className="eyebrow">BONUS ROOM</p><h2>密技空間</h2><p>{passedCount === 2 ? "你已完成兩門課，完整 Skill Finder 已為你開放。" : "完成第一堂與第二堂課後，解鎖精選 Claude Skills 搜尋器。"}</p></div>
-        {passedCount === 2 ? <button onClick={() => go("/secret")}>進入密技空間 →</button> : <button disabled>通過 2 門課後解鎖</button>}
+      <section className={`secret-entry ${passedCount >= 2 ? "unlocked" : "locked-secret"}`} id="secret">
+        <div className="secret-mark" aria-hidden="true">{passedCount >= 2 ? "✦" : "🔒"}</div>
+        <div><p className="eyebrow">BONUS ROOM</p><h2>密技空間</h2><p>{passedCount >= 2 ? "你已完成兩門課，完整 Skill Finder 已為你開放。" : "完成第一堂與第二堂課後，解鎖精選 Claude Skills 搜尋器。"}</p></div>
+        {passedCount >= 2 ? <button onClick={() => go("/secret")}>進入密技空間 →</button> : <button disabled>通過 2 門課後解鎖</button>}
       </section>
       <footer><span>Claude 新同事訓練所</span><span>免費學習 · 完成一小步，勝過收藏十堂課。</span></footer>
     </main>
   );
 }
 
-function Celebration({ score, second, onClose }: { score: number; second: boolean; onClose: () => void }) {
+type CourseId = "claude-01" | "claude-code" | "claude-api";
+
+const courseConfig = {
+  "claude-01": {
+    stage: 1,
+    label: "01",
+    short: "",
+    heading: "認識 Claude：從新同事到工作夥伴",
+    units: lessonUnits,
+    questions: claudeQuestions,
+  },
+  "claude-code": {
+    stage: 2,
+    label: "02 · CLAUDE CODE",
+    short: "CLAUDE CODE · ",
+    heading: "把 AI 從聊天助手變成行動代理人",
+    units: claudeCodeUnits,
+    questions: claudeCodeQuestions,
+  },
+  "claude-api": {
+    stage: 3,
+    label: "03 · CLAUDE API",
+    short: "CLAUDE API · ",
+    heading: "從基礎 API 到受控代理人架構",
+    units: claudeApiUnits,
+    questions: claudeApiQuestions,
+  },
+} as const;
+
+function Celebration({ score, stage, onClose }: { score: number; stage: number; onClose: () => void }) {
+  const allComplete = stage === 3;
   return <div className="celebration" role="dialog" aria-modal="true" aria-label="完成課程">
     <div className="confetti" aria-hidden="true">{Array.from({length:24},(_,i)=><i key={i} style={{"--i":i} as CSSProperties}/>)}</div>
-    <section className={`celebration-card ${second ? "stage-two" : ""}`}>
+    <section className={`celebration-card ${stage === 2 ? "stage-two" : stage === 3 ? "stage-three" : ""}`}>
       <button className="celebration-close" onClick={onClose} aria-label="關閉完成動畫">×</button>
-      <div className="celebration-glow" aria-hidden="true"><span>{second ? "⌘" : "★"}</span></div>
-      <p>{second ? "ALL COURSES COMPLETE" : "STAGE 01 COMPLETE"}</p>
-      <h2>恭喜你!!<br />完成{second ? "第二" : "第一"}階段!!</h2>
-      <div className="celebration-score"><strong>{score}/8</strong><span>{second ? "目前所有課程皆已通過" : "第一堂課測驗通過"}</span></div>
-      <p className="celebration-copy">{second ? "你已經不只是會問 AI，而是開始學會管理一位 AI 行動代理人。" : "你已完成六個單元，也證明自己掌握了與 Claude 協作的核心方法。"}</p>
-      {second && <a className="instagram-follow" href="https://www.instagram.com/ailifeu/" target="_blank" rel="noopener noreferrer"><span>更多 AI 變現方法</span><strong>想要找到更多AI變現的方法<br />歡迎追蹤 <b>@ailifeu</b></strong><i>追蹤 IG →</i></a>}
+      <div className="celebration-glow" aria-hidden="true"><span>{allComplete ? "✦" : stage === 2 ? "⌘" : "★"}</span></div>
+      <p>{allComplete ? "ALL COURSES COMPLETE" : `STAGE 0${stage} COMPLETE`}</p>
+      <h2>恭喜你!!<br />完成第{stage === 1 ? "一" : stage === 2 ? "二" : "三"}階段!!</h2>
+      <div className="celebration-score"><strong>{score}/8</strong><span>{allComplete ? "目前所有正式課程皆已通過" : `第${stage === 1 ? "一" : "二"}堂課測驗通過`}</span></div>
+      <p className="celebration-copy">{allComplete ? "你已從會使用 Claude，一路走到能設計具備工具、狀態、權限與控制機制的 AI 代理系統。" : stage === 2 ? "你已經不只是會問 AI，而是開始學會管理一位 AI 行動代理人。" : "你已完成六個單元，也證明自己掌握了與 Claude 協作的核心方法。"}</p>
+      {allComplete && <a className="instagram-follow" href="https://www.instagram.com/ailifeu/" target="_blank" rel="noopener noreferrer"><span>更多 AI 變現方法</span><strong>想要找到更多AI變現的方法<br />歡迎追蹤 <b>@ailifeu</b></strong><i>追蹤 IG →</i></a>}
       <div className="celebration-actions"><button className="primary" onClick={onClose}>查看完成成績</button><button className="text-action" onClick={() => go("/")}>回到課程總目錄 →</button></div>
     </section>
   </div>;
 }
 
-function Course({ session, courseId }: { session: Session; courseId: "claude-01" | "claude-code" }) {
-  const second = courseId === "claude-code";
-  const units = second ? claudeCodeUnits : lessonUnits;
-  const questions = second ? claudeCodeQuestions : claudeQuestions;
+function Course({ session, courseId }: { session: Session; courseId: CourseId }) {
+  const config = courseConfig[courseId];
+  const { stage, units, questions } = config;
   const totalUnits = units.length;
   const [progress, setProgress] = useState(emptyProgress(courseId));
   const [current, setCurrent] = useState(0);
@@ -221,12 +253,12 @@ function Course({ session, courseId }: { session: Session; courseId: "claude-01"
   const displayName = session.user.user_metadata?.full_name || session.user.email?.split("@")[0] || "學員";
 
   useEffect(() => {
-    loadProgress().then(({ first, second: secondProgress }) => {
-      if (courseId === "claude-code" && !first.passed) {
+    loadProgress().then(({ first, second, third }) => {
+      if ((courseId === "claude-code" && !first.passed) || (courseId === "claude-api" && !second.passed)) {
         setLocked(true);
         return;
       }
-      const value = courseId === "claude-code" ? secondProgress : first;
+      const value = courseId === "claude-api" ? third : courseId === "claude-code" ? second : first;
       setProgress(value);
       setCurrent(Math.min(value.completed_unit_ids.length, totalUnits - 1));
     }).finally(() => setLoading(false));
@@ -272,22 +304,22 @@ function Course({ session, courseId }: { session: Session; courseId: "claude-01"
   };
 
   if (loading) return <main className="loading"><span className="loading-diamond" aria-hidden="true">✦</span><p>載入學習進度…</p></main>;
-  if (locked) return <main className="locked-course"><section><span>🔒</span><p>COURSE 02</p><h1>Claude Code 尚未解鎖</h1><p>請先完成第一堂課的六個單元並通過測驗，才能開始第二階段。</p><button className="primary" onClick={() => go("/courses/claude-01")}>回到第一堂課 →</button></section></main>;
+  if (locked) return <main className="locked-course"><section><span>🔒</span><p>COURSE 0{stage}</p><h1>{stage === 2 ? "Claude Code" : "Claude API"} 尚未解鎖</h1><p>請先完成第{stage === 2 ? "一" : "二"}堂課的所有單元並通過測驗，才能開始第{stage === 2 ? "二" : "三"}階段。</p><button className="primary" onClick={() => go(stage === 2 ? "/courses/claude-01" : "/courses/claude-code")}>回到上一堂課 →</button></section></main>;
   return <main>
     <header className="course-header"><a className="brand" href="#/"><b>C</b><span>Claude 新同事訓練所</span></a><button className="text-action" onClick={() => go("/")}>← 回總目錄</button><span>嗨，{displayName}</span></header>
-    <section className={`player-top ${second ? "code-course" : ""}`}><div><p>COURSE {second ? "02 · CLAUDE CODE" : "01"}</p><h1>{second ? "把 AI 從聊天助手變成行動代理人" : "認識 Claude：從新同事到工作夥伴"}</h1></div><div className="progress"><span>{progress.completed_unit_ids.length}/{totalUnits} 單元完成</span><i><b style={{width:`${progress.completed_unit_ids.length/totalUnits*100}%`}}/></i></div></section>
+    <section className={`player-top ${stage === 2 ? "code-course" : stage === 3 ? "api-course" : ""}`}><div><p>COURSE {config.label}</p><h1>{config.heading}</h1></div><div className="progress"><span>{progress.completed_unit_ids.length}/{totalUnits} 單元完成</span><i><b style={{width:`${progress.completed_unit_ids.length/totalUnits*100}%`}}/></i></div></section>
     <div className="player"><aside><p>課程單元</p>{units.map((item, i) => {const unlocked = i <= progress.completed_unit_ids.length; const done = i < progress.completed_unit_ids.length; return <button key={item.n} disabled={!unlocked} className={current===i?"active":done?"done":""} onClick={() => unlocked && setCurrent(i)}><span>{done?"✓":unlocked?item.n:"🔒"}</span><div><small>{item.tag}</small>{item.title}</div></button>})}<div className={progress.completed_unit_ids.length===totalUnits?"quiz-link ready":"quiz-link"}>{progress.completed_unit_ids.length===totalUnits?"🏆":"🔒"} 課後測驗</div></aside>
       <section className="stage"><div className="stage-meta">單元 {unit.n} / {String(totalUnits).padStart(2,"0")}　<span>{unit.tag}</span></div><h2>{unit.title}</h2><p className="intro">{unit.intro}</p>
-        <figure><img src={asset(unit.image)} alt={unit.alt} width="1672" height="941" loading={current===0?"eager":"lazy"} /><figcaption>{second?"CLAUDE CODE · ":""}LESSON {unit.n} · {unit.tag}</figcaption></figure>
+        <figure><img src={asset(unit.image)} alt={unit.alt} width="1672" height="941" loading={current===0?"eager":"lazy"} /><figcaption>{config.short}LESSON {unit.n} · {unit.tag}</figcaption></figure>
         <div className="body-copy">{unit.body.map((text)=><p key={text}>{text}</p>)}</div>
         <div className="points">{unit.items.map(([title, description],i)=><article key={title}><b>0{i+1}</b><div><h3>{title}</h3><p>{description}</p></div></article>)}</div>
         <div className="practice">✎ <p><b>動手試試看</b><br />{unit.practice}</p></div><div className="tip">💡 <p><b>教練提醒</b><br />{unit.tip}</p></div>
-        <div className="next"><div><small>{current<totalUnits-1?"完成後解鎖":"完成後解鎖測驗"}</small><b>{current<totalUnits-1?units[current+1]?.title:`第${second?"二":"一"}堂課課後測驗`}</b></div><button onClick={next}>{current<progress.completed_unit_ids.length?"前往下一節 →":current<totalUnits-1?"完成本節，解鎖下一節 →":"完成最後一節 →"}</button></div>
-        {progress.completed_unit_ids.length===totalUnits && <section className="exam"><span>🏆</span><h2>課後測驗已解鎖</h2><p>共 8 題，答對 6 題即通過第{second?"二":"一"}堂課。</p><button className="primary" onClick={() => setQuiz(true)}>{progress.passed?`重新挑戰 · 最高 ${progress.quiz_score}/8`:"開始測驗 →"}</button></section>}
-        {quiz && progress.completed_unit_ids.length===totalUnits && <section className="quiz"><h2>選出最好的答案</h2><p>已作答 {Object.keys(answers).length} / 8</p>{questions.map((question,i)=><fieldset key={question.q}><legend><span>{i+1}</span>{question.q}</legend>{question.a.map((answer,j)=><label key={answer}><input type="radio" name={`q${i}`} onChange={() => setAnswers(value=>({...value,[i]:j}))}/>{answer}</label>)}</fieldset>)}<button className="primary" disabled={Object.keys(answers).length<8} onClick={submit}>交卷看成績</button>{result!==null && <div className={score>=6?"result pass":"result fail"}><h2>{score}/8</h2><b>{score>=6?`恭喜你!! 完成第${second?"二":"一"}階段!!`:"再複習一次吧"}</b>{score>=6 && <button className="replay-celebration" onClick={() => setCelebrate(true)}>看看你的成果</button>}</div>}</section>}
+        <div className="next"><div><small>{current<totalUnits-1?"完成後解鎖":"完成後解鎖測驗"}</small><b>{current<totalUnits-1?units[current+1]?.title:`第${stage === 1 ? "一" : stage === 2 ? "二" : "三"}堂課課後測驗`}</b></div><button onClick={next}>{current<progress.completed_unit_ids.length?"前往下一節 →":current<totalUnits-1?"完成本節，解鎖下一節 →":"完成最後一節 →"}</button></div>
+        {progress.completed_unit_ids.length===totalUnits && <section className="exam"><span>🏆</span><h2>課後測驗已解鎖</h2><p>共 8 題，答對 6 題即通過第{stage === 1 ? "一" : stage === 2 ? "二" : "三"}堂課。</p><button className="primary" onClick={() => setQuiz(true)}>{progress.passed?`重新挑戰 · 最高 ${progress.quiz_score}/8`:"開始測驗 →"}</button></section>}
+        {quiz && progress.completed_unit_ids.length===totalUnits && <section className="quiz"><h2>選出最好的答案</h2><p>已作答 {Object.keys(answers).length} / 8</p>{questions.map((question,i)=><fieldset key={question.q}><legend><span>{i+1}</span>{question.q}</legend>{question.a.map((answer,j)=><label key={answer}><input type="radio" name={`q${i}`} onChange={() => setAnswers(value=>({...value,[i]:j}))}/>{answer}</label>)}</fieldset>)}<button className="primary" disabled={Object.keys(answers).length<8} onClick={submit}>交卷看成績</button>{result!==null && <div className={score>=6?"result pass":"result fail"}><h2>{score}/8</h2><b>{score>=6?`恭喜你!! 完成第${stage === 1 ? "一" : stage === 2 ? "二" : "三"}階段!!`:"再複習一次吧"}</b>{score>=6 && <button className="replay-celebration" onClick={() => setCelebrate(true)}>看看你的成果</button>}</div>}</section>}
       </section>
     </div>
-    {celebrate && <Celebration score={score} second={second} onClose={() => setCelebrate(false)} />}
+    {celebrate && <Celebration score={score} stage={stage} onClose={() => setCelebrate(false)} />}
   </main>;
 }
 
@@ -348,6 +380,7 @@ function App() {
   if (!session) return <Login />;
   if (route === "/courses/claude-01") return <Course session={session} courseId="claude-01" />;
   if (route === "/courses/claude-code") return <Course session={session} courseId="claude-code" />;
+  if (route === "/courses/claude-api") return <Course session={session} courseId="claude-api" />;
   if (route === "/secret") return <SecretRoom />;
   return <Dashboard session={session} />;
 }
