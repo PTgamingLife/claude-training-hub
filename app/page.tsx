@@ -8,7 +8,6 @@ import {
   loadDashboard,
   signInWithGoogle,
   signOut,
-  type HonorRow,
 } from "./supabase";
 
 const courses = [
@@ -22,31 +21,21 @@ const courses = [
 ];
 
 type Dashboard = Awaited<ReturnType<typeof loadDashboard>>;
-const empty = {
-  first: { completedUnits: 0, passed: false, bestScore: 0 },
-  second: { completedUnits: 0, passed: false, bestScore: 0 },
-  board: [] as HonorRow[],
-};
 
 export default function Home() {
   const { user, loading: authLoading, displayName } = useSignedInUser();
-  const [dashboard, setDashboard] = useState<Dashboard>(empty);
-  const [loading, setLoading] = useState(true);
+  const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [loginError, setLoginError] = useState("");
 
   useEffect(() => {
     if (!user) {
-      setDashboard(empty);
-      setLoading(false);
       return;
     }
-    setLoading(true);
     loadDashboard()
-      .then(setDashboard)
-      .finally(() => setLoading(false));
+      .then(setDashboard);
   }, [user]);
 
-  if (authLoading || (user && loading)) {
+  if (authLoading || (user && !dashboard)) {
     return <main className="loading">✦<p>載入你的學習空間…</p></main>;
   }
 
