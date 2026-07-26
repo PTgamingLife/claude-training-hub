@@ -22,6 +22,11 @@ export const skillCategories: Record<string, string> = {
 };
 
 export const skills: Skill[] = [
+  {n:"Stop Slop",d:"把 AI 味濃厚的文字修成人話：移除空洞開場、制式對比、被動語態、破折號與冗餘填充句，並用 50 分量表檢查自然度。",c:["content"],r:"hardikpandya/stop-slop",s:13800,u:"https://github.com/hardikpandya/stop-slop"},
+  {n:"Claude-Mem",d:"替 Claude Code 建立跨 Session 的持久記憶：自動擷取工具使用與專案脈絡、壓縮成可搜尋摘要，再於後續工作注入相關內容。會保存工作觀察，敏感資訊請使用隱私設定排除。",c:["auto","data"],r:"thedotmack/claude-mem",s:65800,u:"https://github.com/thedotmack/claude-mem"},
+  {n:"UI/UX Pro Max",d:"可搜尋的 UI/UX 設計資料庫，涵蓋 50+ 種風格、配色與字體組合、99 條 UX 原則及多種前端技術棧，適合設計、實作與介面品質檢查。",c:["design","dev"],r:"nextlevelbuilder/ui-ux-pro-max-skill",s:105200,u:"https://github.com/nextlevelbuilder/ui-ux-pro-max-skill"},
+  {n:"Task Observer",d:"在多步驟工作中記錄你的修正、偏好與有效流程，提出新增或改善其他 Skills 的建議。它會持續寫入觀察紀錄，建議定期人工審核，不要讓它自行無限制改動工作流。",c:["auto","col"],r:"rebelytics/one-skill-to-rule-them-all",s:1100,u:"https://github.com/rebelytics/one-skill-to-rule-them-all"},
+  {n:"Find Skills",d:"告訴 Claude 你想完成什麼，它會透過 Skills CLI 搜尋開放技能生態、比較來源與安裝量，再提供合適的 Skill 與安裝方式。安裝前仍應檢查原始碼及權限。",c:["col","auto"],r:"vercel-labs/skills",s:26000,u:"https://github.com/vercel-labs/skills/tree/main/skills/find-skills"},
   {n:"anthropics/skills（官方）",d:"Anthropic 官方 Skills 大本營：文件處理、Artifacts、MCP builder、Skill 規格與模板，學寫 Skill 從這裡開始。",c:["col","dev"],r:"anthropics/skills",s:162638,u:"https://github.com/anthropics/skills",o:true},
   {n:"Superpowers",d:"熱門 Claude Code 實戰技能庫：TDD、除錯、腦力激盪、Git worktree 等 20+ 個經過實戰驗證的工作流 Skill。",c:["col","dev"],r:"obra/superpowers",s:257447,u:"https://github.com/obra/superpowers"},
   {n:"Awesome Claude Skills（Composio）",d:"大型社群精選清單，依分類整理數百個 Skill，含大量可直接使用的原創 Skill。",c:["col"],r:"ComposioHQ/awesome-claude-skills",s:68086,u:"https://github.com/ComposioHQ/awesome-claude-skills"},
