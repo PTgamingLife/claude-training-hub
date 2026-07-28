@@ -151,7 +151,7 @@ function Dashboard({ session }: { session: Session }) {
           <p className="eyebrow">✦ AI 協作學習地圖</p>
           <h1>一步一步，<br />把 AI 變成你的<span>好同事</span></h1>
           <p>這不是工具說明書，而是一條可以完成的免費學習路線。每一節都要完成，才會解鎖下一節；完成整堂課後再挑戰測驗。</p>
-          <div className="stats"><span><strong>03</strong>完整階段課程</span><span><strong>21</strong>完整教學單元</span><span><strong>75%</strong>測驗門檻</span></div>
+          <div className="stats"><span><strong>{String(passedCount).padStart(2, "0")}</strong>個人完成課程</span><span><strong>03</strong>已建置完整教學</span></div>
         </div>
         <figure className="hero-visual"><img src={asset("/images/hero-premium.webp")} alt="人類與 AI 工作夥伴共同分析資料" /><figcaption><span>FREE AI COURSE</span><b>開始一段更聰明的協作關係</b></figcaption></figure>
       </section>
